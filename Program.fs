@@ -7,6 +7,8 @@ open Problem
 let problems : Map<string, IProblem> =
     [ ("1.1", Day1.Part1.Problem)
       ("1.2", Day1.Part2.Problem)
+      ("1.1b", Day1.Part1Alternate.Problem)
+      ("1.2b", Day1.Part2Alternate.Problem)
     ]
     |> Map.ofList
 

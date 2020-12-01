@@ -22,3 +22,17 @@ let rec findThreeSym (predicate : 'a -> 'a -> 'a -> bool) (list : List<'a>) : Op
         |> Option.orElseWith (fun _ -> findThreeSym predicate xs)
     | [] -> None
 
+
+// Generalize on the number of elements, rather than the predicate.
+let rec findNWithSum (n: int) (sum: int) (list : List<int>) : Option<List<int>> =
+    match list with
+    | x :: xs when n > 1 ->
+        findNWithSum (n - 1) (sum - x) xs
+        |> Option.map (fun r -> x :: r)
+        |> Option.orElseWith (fun _ -> findNWithSum n sum xs)
+    | x :: xs when n = 1 ->
+        if x = sum then
+            Some [x]
+        else
+            findNWithSum n sum xs
+    | _ -> None
