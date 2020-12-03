@@ -11,13 +11,12 @@ let input =
     |> Seq.toList
 
 
-let forestHeight = List.length input
-let forestWidth = List.length input.[0] // Note that the forest wraps around after the width.
+let rec traverse (x, y) (stepX, stepY) (forest: List<List<bool>>) =
+    let forestHeight = List.length forest
+    let forestWidth = List.length forest.[0] // Note that the forest wraps around after the width.
 
-
-let rec traverse (x,y) (stepX, stepY) (input: List<List<bool>>) =
     if y >= forestHeight then 0
-    else (if input.[y].[x] then 1 else 0) + traverse ((x + stepX) % forestWidth, y + stepY) (stepX, stepY) input
+    else Bool.ord forest.[y].[x] + traverse ((x + stepX) % forestWidth, y + stepY) (stepX, stepY) forest
 
 
 type Part1 () =
