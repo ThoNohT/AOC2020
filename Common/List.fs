@@ -23,7 +23,7 @@ let rec findThreeSym (predicate : 'a -> 'a -> 'a -> bool) (list : List<'a>) : Op
     | [] -> None
 
 
-// Generalize on the number of elements, rather than the predicate.
+/// Generalize on the number of elements, rather than the predicate.
 let rec findNWithSum (n: int) (sum: int) (list : List<int>) : Option<List<int>> =
     match list with
     | x :: xs when n > 1 ->
@@ -36,3 +36,13 @@ let rec findNWithSum (n: int) (sum: int) (list : List<int>) : Option<List<int>> 
         else
             findNWithSum n sum xs
     | _ -> None
+
+
+/// Batch all element in a list while the predicate matches, start a new list when it doesn't match.
+let batchWhile (predicate: 'a -> bool) includeSeparators (list: List<'a>) : List<List<'a>> =
+    let f elem (curList, finishedLists) =
+        if predicate elem then (elem :: curList, finishedLists)
+        else (iif includeSeparators [elem] [] , curList :: finishedLists)
+
+    let (lastList, finishedLists) = List.foldBack f list ([], [])
+    lastList :: finishedLists

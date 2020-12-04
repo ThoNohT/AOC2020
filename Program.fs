@@ -13,6 +13,8 @@ let problems : Map<string, IProblem> =
       ("2.2", Day2.Part2.Problem)
       ("3.1", Day3.Part1.Problem)
       ("3.2", Day3.Part2.Problem)
+      ("4.1", Day4.Part1.Problem)
+      ("4.2", Day4.Part2.Problem)
     ]
     |> Map.ofList
 
