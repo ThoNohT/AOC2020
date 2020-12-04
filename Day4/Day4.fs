@@ -15,7 +15,7 @@ let stringIsIntWith (str: string) predicate =
 
 
 let (|ValidLength|InvalidLength|) input =
-    let result = Regex.Match (input, "(\d+)(cm|in)")
+    let result = Regex.Match (input, "\A(\d+)(cm|in)\z")
     if result.Success then
         match result.Groups.[2].Value, Int32.Parse result.Groups.[1].Value with
         | "cm", length when length >= 150 && length <= 193 -> ValidLength
@@ -42,7 +42,7 @@ type PasswordField = {
         | "hgt" -> match field.value with
                    | ValidLength -> true
                    | InvalidLength -> false
-        | "hcl" -> Regex.IsMatch (field.value, "#[0-9a-f]{6}")
+        | "hcl" -> Regex.IsMatch (field.value, "\A#[0-9a-f]{6}\z")
         | "ecl" -> ["amb" ; "blu" ; "brn" ; "gry" ; "grn" ; "hzl" ; "oth"] |> List.contains field.value
         | "pid" -> stringIsIntWith field.value (fun _ str -> String.length str = 9)
         | "cid" -> true
