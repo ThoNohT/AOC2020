@@ -24,7 +24,7 @@ let (|ValidLength|InvalidLength|) input =
     else InvalidLength
 
 
-type PasswordField = {
+type PassportField = {
     id: string
     value: string
 } with
@@ -49,17 +49,17 @@ type PasswordField = {
         | _ -> true
 
 
-type Password = Password of List<PasswordField>
+type Passport = Passport of List<PassportField>
 with
     static member FromString (str: string) =
         str.Split (' ')
         |> List.ofSeq
-        |> List.map PasswordField.FromString
-        |> Password
+        |> List.map PassportField.FromString
+        |> Passport
 
-    /// Checks that the password has at least the required fields.
+    /// Checks that the passport has at least the required fields.
     member this.HasRequiredFields =
-        let (Password fields) = this
+        let (Passport fields) = this
         let requiredFields = [ "byr" ; "iyr" ; "eyr" ; "hgt" ; "hcl" ; "ecl" ; "pid" ] |> Set.ofList
         fields
         |> List.map (fun f -> f.id)
@@ -68,9 +68,9 @@ with
 
     /// Checks that all fields are valid.
     member this.AllFieldsValid =
-        let (Password fields) = this
+        let (Passport fields) = this
         fields
-        |> List.map PasswordField.Validate
+        |> List.map PassportField.Validate
         |> List.contains false
         |> not
 
@@ -80,7 +80,7 @@ let input =
     |> Seq.toList
     |> List.batchWhile (fun l -> l <> "") false
     |> List.map (String.join " ")
-    |> List.map Password.FromString
+    |> List.map Passport.FromString
 
 
 type Part1 () =
