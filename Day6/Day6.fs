@@ -28,7 +28,7 @@ type Part2 () =
     static member Problem = new Part2 () :> IProblem
 
     interface IProblem with
-        /// What is the ID of your seat?
+        /// For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
         member _.Solve () =
             input
             |> List.map (List.map Set.ofSeq)
