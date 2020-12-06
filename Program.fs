@@ -22,7 +22,7 @@ let rec main _ =
     Console.WriteLine ("Please choose a problem to solve.")
     let input = (Console.ReadLine ()).ToLowerInvariant ()
 
-    if "quit".StartsWith input || "exit".StartsWith input then 0
+    if input <> "" && ("quit".StartsWith input || "exit".StartsWith input) then 0
     else
         // Solve a problem if a valid one was provided.
         (Map.tryFind input problems)
