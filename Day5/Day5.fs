@@ -31,30 +31,26 @@ with
         let (BoardingPass (row, column)) = this
         (int64 row * 8L) + int64 column
 
+
 let input =
     File.ReadLines "Day5/input.txt"
     |> Seq.map BoardingPass.Make
     |> Seq.toList
 
 
-type Part1 () =
-    static member Problem = new Part1 () :> IProblem
-
+type Day5 () =
     interface IProblem with
+        member _.Number = "5"
+
         /// What is the highest seat ID on a boarding pass?
-        member _.Solve () =
+        member _.Part1 () =
             input
             |> List.map (fun pass -> pass.SeatId)
             |> List.max
             |> Console.WriteLine
 
-
-type Part2 () =
-    static member Problem = new Part2 () :> IProblem
-
-    interface IProblem with
         /// What is the ID of your seat?
-        member _.Solve () =
+        member _.Part2 () =
             let sorted = List.sortBy (fun (p: BoardingPass) -> p.SeatId) input
 
             sorted

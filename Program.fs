@@ -1,29 +1,20 @@
 ﻿module Program
 
+open System
 open Problem
 
 
 /// Lists the available problems to solve.
-let problems : Map<string, IProblem> =
-    [ ("1.1", Day1.Part1.Problem)
-      ("1.2", Day1.Part2.Problem)
-      ("1.1b", Day1.Part1Alternate.Problem)
-      ("1.2b", Day1.Part2Alternate.Problem)
-      ("2.1", Day2.Part1.Problem)
-      ("2.2", Day2.Part2.Problem)
-      ("3.1", Day3.Part1.Problem)
-      ("3.2", Day3.Part2.Problem)
-      ("4.1", Day4.Part1.Problem)
-      ("4.2", Day4.Part2.Problem)
-      ("5.1", Day5.Part1.Problem)
-      ("5.2", Day5.Part2.Problem)
-      ("6.1", Day6.Part1.Problem)
-      ("6.2", Day6.Part2.Problem)
-    ]
-    |> Map.ofList
-
-
-open System
+let problems =
+    AppDomain.CurrentDomain.GetAssemblies ()
+    |> Seq.collect (fun assy -> assy.GetTypes ())
+    |> Seq.filter (fun t -> typedefof<IProblem>.IsAssignableFrom t && not t.IsInterface)
+    |> Seq.map (fun t -> (Activator.CreateInstance t) :?> IProblem)
+    |> Seq.collect (fun (problem : IProblem) ->
+        [ (problem.Number + ".1", (fun _ -> problem.Part1 ()))
+          (problem.Number + ".2", (fun _ -> problem.Part2 ()))
+        ])
+    |> Map.ofSeq
 
 
 [<EntryPoint>]
@@ -31,11 +22,11 @@ let rec main _ =
     Console.WriteLine ("Please choose a problem to solve.")
     let input = (Console.ReadLine ()).ToLowerInvariant ()
 
-    if input = "quit" || input = "exit" then 0
+    if "quit".StartsWith input || "exit".StartsWith input then 0
     else
         // Solve a problem if a valid one was provided.
         (Map.tryFind input problems)
-        |> Option.map (fun p -> p.Solve ())
+        |> Option.map (fun p -> p ())
         |> Option.defaultWith (fun _ -> Console.WriteLine "Problem not found.")
 
         main [||]

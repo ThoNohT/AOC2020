@@ -5,30 +5,26 @@ open System.IO
 open Common
 open Problem
 
+
 let input =
     File.ReadLines "Day6/input.txt"
     |> Seq.toList
     |> List.batchWhile (fun l -> l <> "") false
 
 
-type Part1 () =
-    static member Problem = new Part1 () :> IProblem
-
+type Day6 () =
     interface IProblem with
+        member _.Number = "6"
+
         /// For each group, count the number of questions to which anyone answered "yes". What is the sum of those counts?
-        member _.Solve () =
+        member _.Part1 () =
             input
             |> List.map (Seq.concat >> Set.ofSeq >> Set.count)
             |> List.sum
             |> Console.WriteLine
 
-
-type Part2 () =
-    static member Problem = new Part2 () :> IProblem
-
-    interface IProblem with
         /// For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
-        member _.Solve () =
+        member _.Part2 () =
             input
             |> List.map (List.map Set.ofSeq >> Set.intersectMany >> Set.count)
             |> List.sum

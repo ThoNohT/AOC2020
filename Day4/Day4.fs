@@ -83,24 +83,19 @@ let input =
     |> List.map Passport.FromString
 
 
-type Part1 () =
-    static member Problem = new Part1 () :> IProblem
-
+type Day4 () =
     interface IProblem with
+        member _.Number = "4"
+
         /// Treat cid as optional. In your batch file, how many passports are valid?
-        member _.Solve () =
+        member _.Part1 () =
             input
             |> List.filter (fun p -> p.HasRequiredFields)
             |> List.length
             |> Console.WriteLine
 
-
-type Part2 () =
-    static member Problem = new Part2 () :> IProblem
-
-    interface IProblem with
         /// Continue to treat cid as optional. In your batch file, how many passports are valid?
-        member _.Solve () =
+        member _.Part2 () =
             input
             |> List.filter (fun p -> p.HasRequiredFields && p.AllFieldsValid)
             |> List.length

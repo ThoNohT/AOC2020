@@ -36,24 +36,19 @@ let input =
     |> Seq.toList
 
 
-type Part1 () =
-    static member Problem = new Part1 () :> IProblem
-
+type Day2 () =
     interface IProblem with
+        member _.Number = "2"
+
         /// How many passwords are valid according to their policies?
-        member _.Solve () =
+        member _.Part1 () =
             input
             |> List.filter (PasswordWithPolicy.IsValidPostal)
             |> List.length
             |> Console.WriteLine
 
-
-type Part2 () =
-    static member Problem = new Part2 () :> IProblem
-
-    interface IProblem with
         /// How many passwords are valid according to the new interpretation of the policies?
-        member _.Solve () =
+        member _.Part2 () =
             input
             |> List.filter (PasswordWithPolicy.IsValidShop)
             |> List.length
