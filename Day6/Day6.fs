@@ -18,8 +18,7 @@ type Part1 () =
         /// For each group, count the number of questions to which anyone answered "yes". What is the sum of those counts?
         member _.Solve () =
             input
-            |> List.map (Seq.concat >> Set.ofSeq)
-            |> List.map Set.count
+            |> List.map (Seq.concat >> Set.ofSeq >> Set.count)
             |> List.sum
             |> Console.WriteLine
 
@@ -31,8 +30,6 @@ type Part2 () =
         /// For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
         member _.Solve () =
             input
-            |> List.map (List.map Set.ofSeq)
-            |> List.map (Set.intersectMany)
-            |> List.map Set.count
+            |> List.map (List.map Set.ofSeq >> Set.intersectMany >> Set.count)
             |> List.sum
             |> Console.WriteLine
