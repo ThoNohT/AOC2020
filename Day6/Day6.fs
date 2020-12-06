@@ -21,11 +21,12 @@ type Day6 () =
             input
             |> List.map (Seq.concat >> Set.ofSeq >> Set.count)
             |> List.sum
-            |> Console.WriteLine
+            |> sprintf "%i"
+
 
         /// For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
         member _.Part2 () =
             input
             |> List.map (List.map Set.ofSeq >> Set.intersectMany >> Set.count)
             |> List.sum
-            |> Console.WriteLine
+            |> sprintf "%i"

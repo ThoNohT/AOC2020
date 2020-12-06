@@ -45,11 +45,11 @@ type Day2 () =
             input
             |> List.filter (PasswordWithPolicy.IsValidPostal)
             |> List.length
-            |> Console.WriteLine
+            |> sprintf "%i"
 
         /// How many passwords are valid according to the new interpretation of the policies?
         member _.Part2 () =
             input
             |> List.filter (PasswordWithPolicy.IsValidShop)
             |> List.length
-            |> Console.WriteLine
+            |> sprintf "%i"

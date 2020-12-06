@@ -47,7 +47,8 @@ type Day5 () =
             input
             |> List.map (fun pass -> pass.SeatId)
             |> List.max
-            |> Console.WriteLine
+            |> sprintf "%i"
+
 
         /// What is the ID of your seat?
         member _.Part2 () =
@@ -60,4 +61,4 @@ type Day5 () =
             |> List.filter (fun (a, b) -> a > b + 1L)
             |> List.map (fun (a, _) -> a - 1L)
             |> List.head
-            |> Console.WriteLine
+            |> sprintf "%i"

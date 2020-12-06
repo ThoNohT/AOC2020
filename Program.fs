@@ -1,6 +1,7 @@
 ﻿module Program
 
 open System
+open System.Diagnostics
 open Problem
 
 
@@ -17,6 +18,32 @@ let problems =
     |> Map.ofSeq
 
 
+let runAndTime p =
+    let sw = Stopwatch.StartNew ()
+    let result = p ()
+    result, sw.Elapsed.Ticks / (TimeSpan.TicksPerMillisecond / 1000L)
+
+
+let showTime time =
+    if time < 1000.0 then
+        sprintf "%f μs" time
+    else
+        sprintf "%f ms" (time / 1000.0)
+
+
+let profileProblem p =
+    let (result, us) = runAndTime p
+
+    Console.WriteLine (sprintf "Answer: %s" result)
+
+    if us < 100_0000L then
+        // The problem was solved quickly (less than 100 ms), so run multiple times to get a more accurate average.
+        let average = List.map (fun _ -> runAndTime p |> snd |> double) [0..99] |> List.average
+        Console.WriteLine (sprintf "Average runtime over 100 runs: %s." (showTime average))
+    else
+        Console.WriteLine (sprintf "Runtime: %i ms." (us / 1000L))
+
+
 [<EntryPoint>]
 let rec main _ =
     Console.WriteLine ("Please choose a problem to solve.")
@@ -26,7 +53,7 @@ let rec main _ =
     else
         // Solve a problem if a valid one was provided.
         (Map.tryFind input problems)
-        |> Option.map (fun p -> p ())
+        |> Option.map profileProblem
         |> Option.defaultWith (fun _ -> Console.WriteLine "Problem not found.")
 
         main [||]

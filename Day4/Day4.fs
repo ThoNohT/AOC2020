@@ -92,11 +92,11 @@ type Day4 () =
             input
             |> List.filter (fun p -> p.HasRequiredFields)
             |> List.length
-            |> Console.WriteLine
+            |> sprintf "%i"
 
         /// Continue to treat cid as optional. In your batch file, how many passports are valid?
         member _.Part2 () =
             input
             |> List.filter (fun p -> p.HasRequiredFields && p.AllFieldsValid)
             |> List.length
-            |> Console.WriteLine
+            |> sprintf "%i"
