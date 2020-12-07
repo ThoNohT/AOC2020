@@ -1,6 +1,5 @@
 ﻿module Day3
 
-open System
 open System.IO
 open Problem
 

@@ -1,6 +1,5 @@
 ﻿module Day5
 
-open System
 open System.IO
 open Common
 open Problem
@@ -48,7 +47,6 @@ type Day5 () =
             |> List.map (fun pass -> pass.SeatId)
             |> List.max
             |> sprintf "%i"
-
 
         /// What is the ID of your seat?
         member _.Part2 () =

@@ -1,7 +1,6 @@
 ﻿[<AutoOpen>]
 module Prelude
 
-
 open System
 
 
@@ -9,13 +8,14 @@ open System
 let iif cond a b =
     if cond then a else b
 
+
 /// Flips the first two parameters of a function.
 let flip f a b = f b a
 
 
 module Bool =
     /// Converts a bool to an ordinal value (1 for true, 0 for false).
-    let ord b = if b then 1 else 0
+    let ord b = iif b 1 0
 
 
 module String =

@@ -1,6 +1,5 @@
 ﻿module Day6
 
-open System
 open System.IO
 open Common
 open Problem
@@ -22,7 +21,6 @@ type Day6 () =
             |> List.map (Seq.concat >> Set.ofSeq >> Set.count)
             |> List.sum
             |> sprintf "%i"
-
 
         /// For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
         member _.Part2 () =
