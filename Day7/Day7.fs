@@ -72,7 +72,5 @@ type Day7 () =
 
         /// How many individual bags are required inside your single shiny gold bag?
         member _.Part2 () =
-            input
-            |> List.find (fun (BagDefinition (n, _)) -> n = "shiny gold")
-            |> (fun bd -> bd.NumberOfContainedBags input)
-            |> sprintf "%i"
+            let bd = List.find (fun (BagDefinition (n, _)) -> n = "shiny gold") input
+            sprintf "%i" <| bd.NumberOfContainedBags input
