@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="Prelude.fs" />
     <Compile Include="Problem.fs" />
+    <Compile Include="Common\Parser.fs" />
     <Compile Include="Common\List.fs" />
     <Content Include="Day1\input.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -37,6 +38,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Day7\Day7.fs" />
+    <Content Include="Day8\input.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Day8\Day8.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
