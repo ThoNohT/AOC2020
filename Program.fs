@@ -36,7 +36,7 @@ let profileProblem p =
 
     Console.WriteLine (sprintf "Answer: %s" result)
 
-    if us < 100_0000L && false then
+    if us < 100_000L then
         // The problem was solved quickly (less than 100 ms), so run multiple times to get a more accurate average.
         let average = List.map (fun _ -> runAndTime p |> snd |> double) [0..99] |> List.average
         Console.WriteLine (sprintf "Average runtime over 100 runs: %s." (showTime average))
