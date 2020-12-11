@@ -20,8 +20,8 @@ with
         if x < 0 || x >= List.length area.[0] || y < 0 || y >= List.length area then OutOfBounds
         else area.[y].[x].state
 
-    static member Update area this =
-        if this.state = Floor then this
+    static member Update area this = async {
+        if this.state = Floor then return this
         else
             let x, y = this.position
             let neighbors =
@@ -31,13 +31,15 @@ with
                 ]
             let occupiedCount = List.filter (Spot.GetState area >> ((=) OccupiedSeat)) neighbors |> List.length
 
-            match this.state with
-            | EmptySeat when occupiedCount = 0 -> { this with state = OccupiedSeat }
-            | OccupiedSeat when occupiedCount >= 4 -> { this with state = EmptySeat }
-            | _ -> this
+            return
+                match this.state with
+                | EmptySeat when occupiedCount = 0 -> { this with state = OccupiedSeat }
+                | OccupiedSeat when occupiedCount >= 4 -> { this with state = EmptySeat }
+                | _ -> this
+    }
 
-    static member Update2 area this =
-        if this.state = Floor then this
+    static member Update2 area this = async {
+        if this.state = Floor then return this
         else
             let x, y = this.position
             let directions =
@@ -53,14 +55,26 @@ with
 
             let occupiedCount = List.filter (findSeat area (x, y) >> ((=) OccupiedSeat)) directions |> List.length
 
-            match this.state with
-            | EmptySeat when occupiedCount = 0 -> { this with state = OccupiedSeat }
-            | OccupiedSeat when occupiedCount >= 5 -> { this with state = EmptySeat }
-            | _ -> this
+            return
+                match this.state with
+                | EmptySeat when occupiedCount = 0 -> { this with state = OccupiedSeat }
+                | OccupiedSeat when occupiedCount >= 5 -> { this with state = EmptySeat }
+                | _ -> this
+    }
 
 
 let rec step update (area: List<List<Spot>>) =
-    let newArea = List.map (List.map (update area)) area
+    let updateRow row = async {
+        let! newRow = Async.Parallel <| List.map (update area) row
+        return List.ofSeq newRow
+    }
+
+    let updateArea area = async {
+        let! newArea = Async.Parallel (List.map updateRow area)
+        return List.ofSeq newArea
+    }
+
+    let newArea = Async.RunSynchronously (updateArea area)
     if List.forall2 (fun l1 l2 -> List.forall2 (fun s1 s2 -> s1.state = s2.state) l1 l2) area newArea then newArea
     else step update newArea
 
