@@ -16,7 +16,7 @@ type Day8 () =
     interface IProblem with
         member _.Number = "10"
 
-        ///What is the number of 1-jolt differences multiplied by the number of 3-jolt differences?
+        /// What is the number of 1-jolt differences multiplied by the number of 3-jolt differences?
         member _.Part1 () =
             let addDifference (diff1Count, diff3Count, lastElem) nextElem =
                 if nextElem = lastElem + 1L then
