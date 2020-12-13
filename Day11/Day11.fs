@@ -96,7 +96,7 @@ type Day8 () =
             |> step Spot.Update
             |> List.map (List.filter (fun s -> s.state = OccupiedSeat) >> List.length)
             |> List.sum
-            |> sprintf "%A"
+            |> sprintf "%i"
 
         /// Given the new visibility method and the rule change for occupied seats becoming empty, once equilibrium is
         /// reached, how many seats end up occupied?
@@ -105,4 +105,4 @@ type Day8 () =
             |> step Spot.Update2
             |> List.map (List.filter (fun s -> s.state = OccupiedSeat) >> List.length)
             |> List.sum
-            |> sprintf "%A"
+            |> sprintf "%i"

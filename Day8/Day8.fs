@@ -74,8 +74,7 @@ type Day8 () =
         member _.Part2 () =
             let possibleChanges =
                 input
-                |> List.mapi (fun i e -> match e with | Jmp _ -> Some i | Nop _ -> Some i | _ -> None)
-                |> List.choose id
+                |> List.choosei (fun i e -> match e with | Jmp _ -> Some i | Nop _ -> Some i | _ -> None)
 
             let flipInstruction index instructions =
                 List.mapi (fun i e ->

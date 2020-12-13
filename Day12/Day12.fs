@@ -60,7 +60,7 @@ type Day8 () =
             input
             |> List.fold Ship.PerformInstruction1 Ship.Init1
             |> (fun ship -> (ship.position |> fst |> Math.Abs) + (ship.position |> snd |> Math.Abs))
-            |> sprintf "%A"
+            |> sprintf "%i"
 
         /// Figure out where the navigation instructions actually lead. What is the Manhattan distance between that
         /// location and the ship's starting position?
@@ -68,4 +68,4 @@ type Day8 () =
             input
             |> List.fold Ship.PerformInstruction2 Ship.Init2
             |> (fun ship -> (ship.position |> fst |> Math.Abs) + (ship.position |> snd |> Math.Abs))
-            |> sprintf "%A"
+            |> sprintf "%i"

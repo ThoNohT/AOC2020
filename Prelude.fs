@@ -43,6 +43,10 @@ module List =
     /// Convert a list of characters to a string.
     let toString = Array.ofList >> System.String
 
+    /// List.choose which allows for an index parameter.
+    let choosei fn list =
+        list |> List.mapi fn |> List.choose id
+
 
 module Int =
     /// Attempts to parse an integer from a string. Returns Some if it succeeds, None otherwise.
@@ -56,7 +60,7 @@ module Long =
     /// Attempts to parse a long from a string. Returns Some if it succeeds, None otherwise.
     let tryParse (str: string) =
         match Int64.TryParse str with
-        | false, result -> Some result
+        | true, result -> Some result
         | _ -> None
 
 
