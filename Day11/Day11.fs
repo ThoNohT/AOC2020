@@ -85,7 +85,7 @@ let input =
     |> Seq.toList
 
 
-type Day8 () =
+type Day11 () =
     interface IProblem with
         member _.Number = "11"
 

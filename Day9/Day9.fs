@@ -34,7 +34,7 @@ let rec trySum sum acc elems =
         | _, _ -> None
 
 
-type Day8 () =
+type Day9 () =
     interface IProblem with
         member _.Number = "9"
 

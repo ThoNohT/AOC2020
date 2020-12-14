@@ -19,7 +19,7 @@ let busNumbers =
     |> List.ofSeq
 
 
-type Day8 () =
+type Day13 () =
     interface IProblem with
         member _.Number = "13"
 
