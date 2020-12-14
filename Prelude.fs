@@ -27,6 +27,9 @@ module String =
     let join (sep: string) (list: List<string>) =
         String.Join (sep, (List.toArray list))
 
+    /// Convert a sequence of chars to a string
+    let fromCharSeq (seq : seq<char>) = seq |> Seq.map string |> String.concat ""
+
 
 module Option =
     /// Get the value from an Option, or throw the provided exception.

@@ -76,6 +76,10 @@ module Combinators =
     /// ignored.
     let skip p1 p2 = andThen (fun a _ -> a) p1 p2
 
+    /// Returns a parser which can be used to pipe the reuslt of a previous parser into a new parser, where only the
+    /// result of the second parser is kept.
+    let discard p1 p2 = andThen (fun _ b -> b) p1 p2
+
     /// Returns a parser which applies the result of the first parser to the result of the second parser.
     let apply pf = sequence (fun f a -> f a) pf
 
@@ -224,11 +228,18 @@ module Int =
     /// consuming input. Otherwise, the parser fails.
     let parseInt str = Int.tryParse str |> Basic.fromOption
 
+    /// Returns a parser that succeeds when the specified string is a long, and returns this long without
+    /// consuming input. Otherwise, the parser fails.
+    let parseLong str = Long.tryParse str |> Basic.fromOption
+
     /// A parser that returns a single digit as an integer.
     let digit = Char.num |> Combinators.map (List.singleton >> List.toString) |> Combinators.bind parseInt
 
     /// A parser that returns a sequence of digits as a positive integer.
     let positiveInt = String.stringOf Char.num |> Combinators.bind parseInt
+
+    /// A parser that returns a sequence of digits as a positive long.
+    let positiveLong = String.stringOf Char.num |> Combinators.bind parseLong
 
     /// A parser that returns a sequence of digits, optionally prefixed by a '-' or '+' as an integer.
     let int =
@@ -239,3 +250,13 @@ module Int =
         |> Combinators.map (Option.defaultValue "")
         |> Combinators.andThen (+) (String.stringOf Char.num)
         |> Combinators.bind parseInt
+
+    /// A parser that returns a sequence of digits, optionally prefixed by a '-' or '+' as a long.
+    let long =
+        Regex.optional
+            (Combinators.alt
+                (String.literal "-")
+                (String.literal "+" |> Combinators.map (always "")))
+        |> Combinators.map (Option.defaultValue "")
+        |> Combinators.andThen (+) (String.stringOf Char.num)
+        |> Combinators.bind parseLong
