@@ -32,14 +32,7 @@ module Game =
             round + 1, Map.add elem lo acc, lo
         List.fold addStartingNumber (1, Map.empty, Never) list
 
-    let nextNumber round lastNumber acc =
-        Map.tryFind lastNumber acc
-        |> Option.map (fun n -> round - n)
-        |> Option.defaultValue 0
-
     let play totalRounds list  =
-        let (round, acc, lastOccurrence) = init list
-
         let rec playRound round acc (lo: LastOccurrences) =
             let nextNumber = lo.DetermineNextNumber
             let occurrence =
@@ -50,6 +43,7 @@ module Game =
             if round = totalRounds then nextNumber
             else playRound (round + 1) (Map.add nextNumber occurrence acc) occurrence
 
+        let (round, acc, lastOccurrence) = init list
         playRound round acc lastOccurrence
 
 
