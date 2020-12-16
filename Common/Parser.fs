@@ -221,6 +221,14 @@ module String =
     /// result as a string. If the provided parser fails earlier, the resulting parser fails.
     let stringOfLength p n = Regex.times n p |> Combinators.map List.toString
 
+    /// A parser that parses zero or more whitespace characters.
+    let whitespace = Regex.star (Char.char |> Combinators.check Char.IsWhiteSpace)
+
+    /// A parser that parses one or more whitespace characters.
+    let whitespace' = Regex.plus (Char.char |> Combinators.check Char.IsWhiteSpace)
+
+    /// A parser that parses a newline (\n or \r\n).
+    let newline = Combinators.alt (literal "\n") (literal "\r\n")
 
 /// Integer parsers.
 module Int =
