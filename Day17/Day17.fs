@@ -17,16 +17,12 @@ with
         c
 
     member this.Neighbors =
-        let rec buildNeighbors acc = function
-            | [] -> acc
-            | x :: xs ->
-                let newAcc =
-                    match acc with
-                    | [] -> [ [ x - 1 ] ; [ x ] ; [ x + 1 ] ]
-                    | _ -> List.collect (fun r -> [ x - 1 :: r ; x :: r ; x + 1 :: r ] ) acc
-                buildNeighbors newAcc xs
+        let buildNeighbors acc x =
+            match acc with
+            | [] -> [ [ x - 1 ] ; [ x ] ; [ x + 1 ] ]
+            | _ -> List.collect (fun r -> [ x - 1 :: r ; x :: r ; x + 1 :: r ] ) acc
 
-        buildNeighbors [] this.Coords
+        List.fold buildNeighbors [] this.Coords
         |> List.map (List.rev >> Cube)
         |> Set.ofList
         |> Set.remove this
