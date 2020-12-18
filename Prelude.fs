@@ -16,6 +16,8 @@ let flip f a b = f b a
 /// Create a function that ignores the input and always returns the provided value.
 let always a = fun _ -> a
 
+let inline curry f a b = f (a, b)
+
 
 module Bool =
     /// Converts a bool to an ordinal value (1 for true, 0 for false).

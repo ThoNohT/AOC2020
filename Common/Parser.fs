@@ -7,7 +7,9 @@ type Parser<'a> = Parser of (string -> Option<'a * string>)
 
 /// Run a parser, returning its raw output.
 let run (Parser p) (input: string) =
-    p input
+    let result = p input
+    //printfn "%A" result
+    result
 
 
 /// Run a parser, returning the resulting value as an Option.
@@ -50,27 +52,27 @@ module Combinators =
 
     /// Returns a parser which is equivalent to applying two given parsers after each other and combining their result
     /// using the provided function.
-    let sequence combine p1 p2 =
+    let sequence combine (p1: Lazy<Parser<'a>>) (p2: Lazy<Parser<'b>>) =
         Parser (fun s1 ->
-            match run p1 s1 with
+            match run p1.Value s1 with
             | None -> None
             | Some (r1, s2) ->
-                match run p2 s2 with
+                match run p2.Value s2 with
                 | None -> None
                 | Some (r2, s3) -> Some (combine r1 r2, s3))
 
     /// Similar to `sequence` except the order in which the parsers are invoked is inverted. This function can be used
     /// when piping the result of an earlier parser into a new parser, where with sequence this would result in the
     /// parsers working backwards, this function performs them in the expected order.
-    let andThen combine = flip (sequence combine)
+    let andThen combine p1 p2 = flip (sequence combine) p1 (lazy p2)
 
     /// Returns a parser which is equivalent to applying two given parsers after each other and discarding the result
     /// of the second.
-    let left p1 p2 = sequence (fun l _ -> l) p1 p2
+    let left p1 p2 = sequence (fun l _ -> l) (lazy p1) (lazy p2)
 
     /// Returns a parser which is equivalent to applying two given parsers after each other and discarding the result
     /// of the first.
-    let right p1 p2 = sequence (fun _ r -> r) p1 p2
+    let right p1 p2 = sequence (fun _ r -> r) (lazy p1) (lazy p2)
 
     /// Returns a parser which can be used to pipe the reuslt of a previous parser into a new parser that will be
     /// ignored.
@@ -81,11 +83,11 @@ module Combinators =
     let discard p1 p2 = andThen (fun _ b -> b) p1 p2
 
     /// Returns a parser which applies the result of the first parser to the result of the second parser.
-    let apply pf = sequence (fun f a -> f a) pf
+    let apply pf p : Parser<'b> = sequence (fun f a -> f a) (lazy pf) p
 
     /// A flipped version of `apply` which can be used when chaining parsers with one parser per constructor argument
     /// of the type being parsed.
-    let andMap (p: Parser<'a>) (pf : (Parser<'a -> 'b>)) = (flip apply) p pf
+    let andMap (p: Lazy<Parser<'a>>) (pf : Parser<'a -> 'b>) = (flip apply) p pf
 
     /// Sequentially combines two parsers where the second can depend on the outcome of the first.
     let bind f (Parser p) = Parser (fun s1 -> Option.bind (fun ( r1, s2 ) -> run (f r1) s2) (p s1))
@@ -119,14 +121,14 @@ module Regex =
 
     /// Returns a parser which represents application of the given parser one or more times. The result is returned in a list
     /// that has 1 or more elements.
-    let plus p = Combinators.sequence List.cons p (star p)
+    let plus p = Combinators.sequence List.cons (lazy p) (lazy star p)
 
     /// Returns a parser which represents application of the given parser exactly the given number of times.
     let rec times n p =
         if n <= 0 then
             Basic.succeed []
         else
-            Combinators.sequence List.cons p (times (n - 1) p)
+            Combinators.sequence List.cons p (lazy times (n - 1) p)
 
     /// Returns a parser that applies the parser once and if it fails pretends that the parser was never applied.
     let optional p = Combinators.alt (Combinators.map Some p) (Basic.succeed None)
@@ -174,7 +176,7 @@ module String =
     let entire p = Combinators.left p eof
 
     /// Returns a parser that applies a parser one or more times, but separated by the specified parser every time.
-    let separated separator p = Combinators.sequence List.cons p (Regex.star (Combinators.right separator p))
+    let separated separator p = Combinators.sequence List.cons (lazy p) (lazy Regex.star (Combinators.right separator p))
 
     /// The same as `separated`, however rather than a parser, it accepts a string as the first parameter which is the
     /// literal separator.
@@ -200,7 +202,7 @@ module String =
 
     /// Returns a parser which returns everything in the input after the first occurrence of the given string. Everything
     /// prior to the string and the string itself are consumed.
-    let after s = Combinators.right (occurs s) Basic.look
+    let after s = Combinators.right (occurs s) (Basic.look)
 
     /// Returns a parser which returns everything in the input before the first occurrence of the given string. The string
     /// itself is not consumed.
@@ -219,7 +221,7 @@ module String =
 
     /// Given a parser that parses a single character, returns a parser that applies this parser n times, and returns the
     /// result as a string. If the provided parser fails earlier, the resulting parser fails.
-    let stringOfLength p n = Regex.times n p |> Combinators.map List.toString
+    let stringOfLength p n = Regex.times n (lazy p) |> Combinators.map List.toString
 
     /// A parser that parses zero or more whitespace characters.
     let whitespace = Regex.star (Char.char |> Combinators.check Char.IsWhiteSpace)
@@ -256,7 +258,7 @@ module Int =
                 (String.literal "-")
                 (String.literal "+" |> Combinators.map (always "")))
         |> Combinators.map (Option.defaultValue "")
-        |> Combinators.andThen (+) (String.stringOf Char.num)
+        |> Combinators.andThen (+) (lazy String.stringOf Char.num)
         |> Combinators.bind parseInt
 
     /// A parser that returns a sequence of digits, optionally prefixed by a '-' or '+' as a long.
@@ -266,5 +268,5 @@ module Int =
                 (String.literal "-")
                 (String.literal "+" |> Combinators.map (always "")))
         |> Combinators.map (Option.defaultValue "")
-        |> Combinators.andThen (+) (String.stringOf Char.num)
+        |> Combinators.andThen (+) (lazy String.stringOf Char.num)
         |> Combinators.bind parseLong

@@ -16,7 +16,7 @@ module PS = Parser.String
 type Ticket = Ticket of List<int>
 with
     static member Parser =
-        PS.separated' "," PI.positiveInt |> PC.skip PS.newline |> PC.map Ticket
+        PS.separated' "," PI.positiveInt |> PC.skip (lazy PS.newline) |> PC.map Ticket
 
     member this.List =
         let (Ticket list) = this
@@ -28,8 +28,8 @@ with
 
     static member Parser =
         PB.succeed Range.Make
-        |> PC.andMap (PI.positiveInt |> PC.skip (PCh.literalChar '-' ))
-        |> PC.andMap PI.positiveInt
+        |> PC.andMap (lazy (PI.positiveInt |> PC.skip (lazy PCh.literalChar '-' )))
+        |> PC.andMap (lazy (PI.positiveInt))
 
     member this.ValidateValue value =
         let (Range (low, high)) = this
@@ -46,9 +46,9 @@ type Field = {
 
     static member Parser =
         PB.succeed Field.Make
-        |> PC.andMap (PS.takeWhile ((<>) ':') |> PC.skip (PS.literal ": "))
-        |> PC.andMap (Range.Parser |> PC.skip (PS.literal " or "))
-        |> PC.andMap (Range.Parser |> PC.skip PS.newline)
+        |> PC.andMap (lazy (PS.takeWhile ((<>) ':') |> PC.skip (lazy PS.literal ": ")))
+        |> PC.andMap (lazy (Range.Parser |> PC.skip (lazy PS.literal " or ")))
+        |> PC.andMap (lazy (Range.Parser |> PC.skip (lazy  PS.newline)))
 
     member this.ValidateValue value = this.firstRange.ValidateValue value || this.secondRange.ValidateValue value
 
@@ -63,9 +63,9 @@ type Document = {
 
     static member Parser =
         PB.succeed Document.Make
-        |> PC.andMap (PR.plus Field.Parser |> PC.skip PS.whitespace)
-        |> PC.andMap (PS.literal "your ticket:" |> (PC.discard PS.newline) |> (PC.discard Ticket.Parser) |> PC.skip PS.whitespace)
-        |> PC.andMap (PS.literal "nearby tickets:" |> (PC.discard PS.newline) |> (PC.discard (PR.plus Ticket.Parser)) |> PC.skip PS.whitespace)
+        |> PC.andMap (lazy (PR.plus Field.Parser |> PC.skip (lazy PS.whitespace)))
+        |> PC.andMap (lazy (PS.literal "your ticket:" |> (PC.discard (lazy PS.newline)) |> (PC.discard (lazy Ticket.Parser)) |> PC.skip (lazy PS.whitespace)))
+        |> PC.andMap (lazy (PS.literal "nearby tickets:" |> (PC.discard (lazy PS.newline)) |> (PC.discard (lazy PR.plus Ticket.Parser)) |> PC.skip (lazy PS.whitespace)))
         |> PS.entire
 
 
@@ -75,20 +75,20 @@ let input =
 
 
 type Day16 () =
-    let allRanges = List.collect (fun r -> [ r.firstRange ; r.secondRange ]) input.fields
+    let allRanges = lazy ( List.collect (fun r -> [ r.firstRange ; r.secondRange ]) input.fields )
 
-    let invalidValues =
+    let invalidValues = lazy (
             input.nearbyTickets
             |> List.collect (fun ticket -> ticket.List)
-            |> List.filter (fun v -> not <| List.exists (fun (r: Range) -> r.ValidateValue v) allRanges)
-            |> Set.ofList
+            |> List.filter (fun v -> not <| List.exists (fun (r: Range) -> r.ValidateValue v) allRanges.Value)
+            |> Set.ofList )
 
     interface IProblem with
         member _.Number = "16"
 
         /// What is your ticket scanning error rate?
         member _.Part1 () =
-            invalidValues
+            invalidValues.Value
             |> Set.fold (+) 0
             |> sprintf "%i"
 
@@ -97,7 +97,7 @@ type Day16 () =
         member _.Part2 () =
             let validTickets =
                 input.nearbyTickets
-                |> List.filter (fun ticket -> Set.ofList ticket.List |> Set.intersect invalidValues |> Set.isEmpty)
+                |> List.filter (fun ticket -> Set.ofList ticket.List |> Set.intersect invalidValues.Value |> Set.isEmpty)
 
             let validTicketValuesAtIndex index = List.map (fun (t: Ticket) -> t.List.[index]) validTickets
 

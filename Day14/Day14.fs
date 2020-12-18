@@ -71,15 +71,15 @@ with
         let maskCharParser = PC.alt (PCh.literalChar 'X') (PCh.num)
         let maskParser =
             PS.literal "mask = "
-            |> PC.discard (PS.stringOfLength (maskCharParser) 36)
+            |> PC.discard (lazy PS.stringOfLength (maskCharParser) 36)
             |> PS.entire
             |> PC.map SetMask
 
         let writeParser =
             PS.literal "mem["
-            |> PC.discard PI.positiveLong
-            |> PC.skip (PS.literal "] = ")
-            |> PC.andThen (fun addr value -> Write (addr, value)) PI.positiveLong
+            |> PC.discard (lazy  PI.positiveLong)
+            |> PC.skip (lazy PS.literal "] = ")
+            |> PC.andThen (fun addr value -> Write (addr, value)) (lazy PI.positiveLong)
             |> PS.entire
 
         PC.alt maskParser writeParser
