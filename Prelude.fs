@@ -32,6 +32,10 @@ module String =
     /// Convert a sequence of chars to a string
     let fromCharSeq (seq : seq<char>) = seq |> Seq.map string |> String.concat ""
 
+    /// Split a string into a list of strings.
+    let split (sep: string) (string: string) =
+        string.Split sep |> List.ofSeq
+
 
 module Option =
     /// Get the value from an Option, or throw the provided exception.
