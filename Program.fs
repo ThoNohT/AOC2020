@@ -44,16 +44,25 @@ let profileProblem p =
         Console.WriteLine (sprintf "Runtime: %i ms." (us / 1000L))
 
 
+/// If Some, this problem will be ran, and then the program will exit immediately. Otherwise, an input loop is started.
+let debugProblem = None
+
 [<EntryPoint>]
 let rec main _ =
-    Console.WriteLine ("Please choose a problem to solve.")
-    let input = (Console.ReadLine ()).ToLowerInvariant ()
+    debugProblem
+    |> Option.map (sprintf "Runing problem %s")
+    |> Option.defaultValue "Please choose a problem to solve."
+    |> printfn "%s"
+
+    let input =
+        debugProblem
+        |> Option.defaultWith (fun _ -> (Console.ReadLine ()).ToLowerInvariant ())
 
     if input <> "" && ("quit".StartsWith input || "exit".StartsWith input) then 0
     else
         // Solve a problem if a valid one was provided.
         (Map.tryFind input problems)
         |> Option.map profileProblem
-        |> Option.defaultWith (fun _ -> Console.WriteLine "Problem not found.")
+        |> Option.defaultWith (fun _ -> printfn "Problem not found.")
 
-        main [||]
+        if Option.isSome debugProblem then 0 else main [||]
