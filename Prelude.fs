@@ -44,6 +44,10 @@ module Option =
         | Some value -> value
         | _ -> raise ex.Value
 
+    /// Applies the provided function on the value of the option, or returns the default value if it is None.
+    let unwrap defaultValue f =
+        Option.map f >> Option.defaultValue defaultValue
+
 
 module List =
     /// Prefix cons operator.
@@ -87,3 +91,22 @@ module Char =
 
     /// Checks whether a character is alphabetical or numerical.
     let isAlphaNum char = Char.IsDigit char || isAlpha char
+
+
+module Stack =
+    type Stack<'t> = Empty | Stack of 't * Stack<'t>
+    let empty = Empty
+    let push elem stack = Stack (elem, stack)
+    let pop = function | Empty -> failwith "Stack empty" | Stack (elem, rest) -> elem, rest
+    let top = function | Empty -> None | Stack (elem, _) -> Some elem
+    let isEmpty = function | Empty -> true | _ -> false
+
+
+module Queue =
+    type Queue<'t> = Queue of List<'t>
+    let empty = Queue []
+    let push elem (Queue xs) = Queue (elem :: xs)
+    let pop = function
+        | Queue [] -> None
+        | Queue xs -> Some (List.last xs, List.take (List.length xs - 1) xs)
+    let toList (Queue xs) = List.rev xs
