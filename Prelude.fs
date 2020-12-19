@@ -17,7 +17,7 @@ let flip f a b = f b a
 let always a = fun _ -> a
 
 let inline curry f a b = f (a, b)
-
+let inline uncurry f (a, b) = f a b
 
 module Bool =
     /// Converts a bool to an ordinal value (1 for true, 0 for false).
